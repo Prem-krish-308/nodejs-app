@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main]   # change to main if your branch is main
 
 jobs:
   build:
@@ -23,5 +23,19 @@ jobs:
     - name: Run Tests
       run: npm test
 
-    - name: Build
+    - name: Build App
       run: npm run build
+
+    # 🔐 Login to Docker Hub
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    # 🐳 Build & Push Docker Image
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/nodejs-cicd-app:latest
